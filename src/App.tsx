@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { invoke, convertFileSrc } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { isPermissionGranted, requestPermission, sendNotification, onAction, registerActionTypes, active } from '@tauri-apps/plugin-notification';
+import { isPermissionGranted, requestPermission, sendNotification, onAction, registerActionTypes } from '@tauri-apps/plugin-notification';
 import { useSettings } from './hooks/useSettings';
 import './App.css';
 
@@ -71,9 +71,9 @@ function App() {
         console.error("Failed to register action types", e);
       }
 
-      let actionListener: () => void = () => {};
+      let actionListener: any = null;
       try {
-        actionListener = await onAction((notif) => {
+        actionListener = await onAction(() => {
           if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.currentTime = 0;
@@ -82,7 +82,11 @@ function App() {
       } catch (e) {
         console.error("Failed to set onAction", e);
       }
-      if (!isMounted) { actionListener(); } else { unlistenAction = actionListener; }
+      if (!isMounted) { 
+        if (actionListener) actionListener.unregister(); 
+      } else { 
+        unlistenAction = actionListener ? () => actionListener.unregister() : () => {}; 
+      }
 
       const tick = await listen<TimerState>('timer-tick', (event) => {
         const { time_left, is_running, work_duration } = event.payload;
