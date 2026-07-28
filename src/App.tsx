@@ -218,7 +218,7 @@ function App() {
 
   const totalSeconds = workDuration * 60;
   const progressPercent = (timeLeft / totalSeconds) * 100;
-  const radius = 90;
+  const radius = 85;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
 
@@ -245,8 +245,8 @@ function App() {
           <svg className="progress-ring" width="220" height="220">
             <circle
               className="progress-ring-bg"
-              stroke="rgba(255,255,255,0.1)"
-              strokeWidth="12"
+              stroke="rgba(255,255,255,0.12)"
+              strokeWidth="10"
               fill="transparent"
               r={radius}
               cx="110"
@@ -255,7 +255,7 @@ function App() {
             <circle
               className="progress-ring-fill"
               stroke="url(#gradient)"
-              strokeWidth="12"
+              strokeWidth="14"
               fill="transparent"
               r={radius}
               cx="110"
@@ -267,8 +267,8 @@ function App() {
             />
             <defs>
               <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#00f2fe" />
-                <stop offset="100%" stopColor="#4facfe" />
+                <stop offset="0%" stopColor="rgba(255,255,255,0.92)" />
+                <stop offset="100%" stopColor="rgba(220,235,255,0.7)" />
               </linearGradient>
             </defs>
           </svg>
@@ -281,13 +281,13 @@ function App() {
         <div className="actions">
           <button className={`btn-primary ${!isRunning ? 'paused' : ''}`} onClick={toggleTimer}>
             {isRunning ? (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
             ) : (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             )}
           </button>
           <button className="btn-secondary" onClick={handleReset}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
           </button>
         </div>
 
