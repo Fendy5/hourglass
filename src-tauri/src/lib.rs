@@ -106,8 +106,13 @@ pub fn run() {
             let settings_i_clone = settings_i.clone();
             let quit_i_clone = quit_i.clone();
 
+            #[cfg(target_os = "macos")]
+            let tray_icon = tauri::image::Image::from_bytes(include_bytes!("../icons/tray-icon.png")).unwrap();
+            #[cfg(not(target_os = "macos"))]
+            let tray_icon = tauri::image::Image::from_bytes(include_bytes!("../icons/32x32.png")).unwrap();
+
             let _tray = TrayIconBuilder::with_id("main")
-                .icon(tauri::image::Image::from_bytes(include_bytes!("../icons/tray-icon.png")).unwrap())
+                .icon(tray_icon)
                 .icon_as_template(cfg!(target_os = "macos"))
                 .menu(&menu)
                 .on_menu_event(|app, event| match event.id.as_ref() {
