@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { invoke, convertFileSrc } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/plugin-notification';
+import { isPermissionGranted, requestPermission, sendNotification, onAction, registerActionTypes, active } from '@tauri-apps/plugin-notification';
 import { useSettings } from './hooks/useSettings';
 import './App.css';
 
@@ -40,6 +40,7 @@ function App() {
     let unlistenLock: () => void;
     let unlistenTick: () => void;
     let unlistenFinish: () => void;
+    let unlistenAction: () => void;
     let isMounted = true;
 
     const setupListeners = async () => {
@@ -57,6 +58,32 @@ function App() {
         console.error("Failed to get initial state", e);
       }
 
+      try {
+        await registerActionTypes([{
+          id: 'timer-finished',
+          actions: [{
+            id: 'stop-audio',
+            title: '关闭铃声',
+            foreground: true
+          }]
+        }]);
+      } catch (e) {
+        console.error("Failed to register action types", e);
+      }
+
+      let actionListener: () => void = () => {};
+      try {
+        actionListener = await onAction((notif) => {
+          if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+          }
+        });
+      } catch (e) {
+        console.error("Failed to set onAction", e);
+      }
+      if (!isMounted) { actionListener(); } else { unlistenAction = actionListener; }
+
       const tick = await listen<TimerState>('timer-tick', (event) => {
         const { time_left, is_running, work_duration } = event.payload;
         setTimeLeft(time_left);
@@ -72,21 +99,7 @@ function App() {
       if (!isMounted) { tick(); } else { unlistenTick = tick; }
 
       const finish = await listen('timer-finished', async () => {
-        // Notification
-        if (settings.showNotification) {
-          let permissionGranted = await isPermissionGranted();
-          if (!permissionGranted) {
-            const permission = await requestPermission();
-            permissionGranted = permission === 'granted';
-          }
-          if (permissionGranted) {
-            sendNotification({ title: 'Hourglass', body: '时间到了，请起身休息一下，喝口水吧！' });
-          }
-        } else {
-          alert('时间到了，请起身休息一下，喝口水吧！');
-        }
-
-        // Ringtone
+        // 1. Start ringtone
         try {
           if (audioRef.current) {
             audioRef.current.pause();
@@ -115,10 +128,27 @@ function App() {
 
           if (audioSrc) {
             audioRef.current.src = audioSrc;
+            audioRef.current.loop = false;
             audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
           }
         } catch (err) {
           console.error("Error playing sound", err);
+        }
+
+        // 2. Show Notification / Popup
+        if (settings.showNotification) {
+          let permissionGranted = await isPermissionGranted();
+          if (!permissionGranted) {
+            const permission = await requestPermission();
+            permissionGranted = permission === 'granted';
+          }
+          if (permissionGranted) {
+            sendNotification({ 
+              title: 'Hourglass', 
+              body: '时间到了，请起身休息一下，喝口水吧！',
+              actionTypeId: 'timer-finished',
+            });
+          }
         }
       });
       if (!isMounted) { finish(); } else { unlistenFinish = finish; }
@@ -149,8 +179,16 @@ function App() {
       if (unlistenTick) unlistenTick();
       if (unlistenFinish) unlistenFinish();
       if (unlistenLock) unlistenLock();
+      if (unlistenAction) unlistenAction();
     };
   }, []);
+
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  };
 
   const toggleTimer = () => {
     if (isRunning) {
@@ -170,6 +208,7 @@ function App() {
   };
 
   const handleClose = () => {
+    stopAudio();
     getCurrentWindow().hide();
   };
 
@@ -180,7 +219,7 @@ function App() {
   const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
 
   return (
-    <div className="app-wrapper">
+    <div className="app-wrapper" onClick={stopAudio}>
       <div className="glass-panel">
         
         <header className="header" onMouseDown={() => getCurrentWindow().startDragging()}>
