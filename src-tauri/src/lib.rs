@@ -108,7 +108,7 @@ pub fn run() {
 
             let _tray = TrayIconBuilder::with_id("main")
                 .icon(tauri::image::Image::from_bytes(include_bytes!("../icons/tray-icon.png")).unwrap())
-                .icon_as_template(true)
+                .icon_as_template(cfg!(target_os = "macos"))
                 .menu(&menu)
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "start" => {
