@@ -21,6 +21,8 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: install pnpm
         uses: pnpm/action-setup@v4
@@ -46,13 +48,29 @@ jobs:
       - name: install frontend dependencies
         run: pnpm install
         
+      - name: Generate Release Notes
+        id: get_notes
+        shell: bash
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s")
+          else
+            COMMITS=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s")
+          fi
+          COMMITS=$(echo "$COMMITS" | grep -v "^- release: v" || true)
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "### 🚀 最新更新内容" >> $GITHUB_OUTPUT
+          echo "$COMMITS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: app-v__VERSION__
           releaseName: 'Hourglass v__VERSION__'
-          releaseBody: '最新版本发布'
+          releaseBody: ${{ steps.get_notes.outputs.notes }}
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
