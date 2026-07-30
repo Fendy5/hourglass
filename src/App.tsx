@@ -4,7 +4,7 @@ import { listen } from '@tauri-apps/api/event';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { isPermissionGranted, requestPermission, sendNotification, onAction, registerActionTypes } from '@tauri-apps/plugin-notification';
 import { useSettings } from './hooks/useSettings';
-import { GlassPanel } from './components/GlassPanel';
+import { GlassPanelV2 } from './components/GlassPanelV2';
 import './App.css';
 
 const RESET_THRESHOLD = 3 * 60; // 3 minutes in seconds
@@ -219,7 +219,7 @@ function App() {
 
   return (
     <div className="app-wrapper" onClick={stopAudio}>
-      <GlassPanel
+      <GlassPanelV2
         timeLeft={timeLeft}
         workDuration={workDuration}
         isRunning={isRunning}
