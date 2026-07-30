@@ -8,6 +8,7 @@ export interface Settings {
   customRingtonePath: string;
   showNotification: boolean;
   language: 'zh' | 'en';
+  appearance: 'system' | 'dark' | 'light';
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -16,6 +17,7 @@ const DEFAULT_SETTINGS: Settings = {
   customRingtonePath: '',
   showNotification: true,
   language: 'zh',
+  appearance: 'system',
 };
 
 // Singleton store promise

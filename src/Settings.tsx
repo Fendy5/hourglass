@@ -4,7 +4,7 @@ import { getVersion } from '@tauri-apps/api/app';
 import { open } from '@tauri-apps/plugin-dialog';
 import { useSettings } from './hooks/useSettings';
 import './Settings.css';
-import { Music, MessageSquare, Globe, Info } from 'lucide-react';
+import { Music, MessageSquare, Globe, Info, SunMoon } from 'lucide-react';
 
 // @ts-ignore
 const bellFiles = import.meta.glob('/src/bells/*.{mp3,wav,ogg,aac,m4a}', { eager: true, query: '?url', import: 'default' });
@@ -73,6 +73,11 @@ export default function Settings() {
       versionInfo: '版本信息',
       selectFile: '选择文件',
       notSelected: '未选择',
+      appearance: '外观',
+      appearanceDesc: '设置应用的主题配色',
+      themeSystem: '跟随系统',
+      themeLight: '浅色模式',
+      themeDark: '深色模式',
     };
     const en: Record<string, string> = {
       ringtone: 'Ringtone',
@@ -90,6 +95,11 @@ export default function Settings() {
       versionInfo: 'Version Info',
       selectFile: 'Select File',
       notSelected: 'Not selected',
+      appearance: 'Appearance',
+      appearanceDesc: 'Set application theme',
+      themeSystem: 'System',
+      themeLight: 'Light',
+      themeDark: 'Dark',
     };
     return settings.language === 'en' ? en[key] : zh[key];
   };
@@ -97,6 +107,7 @@ export default function Settings() {
   const tabs = [
     { id: 'ringtone', label: t('ringtone'), icon: <Music size={18} /> },
     { id: 'popup', label: t('popup'), icon: <MessageSquare size={18} /> },
+    { id: 'appearance', label: t('appearance'), icon: <SunMoon size={18} /> },
     { id: 'language', label: t('language'), icon: <Globe size={18} /> },
     { id: 'about', label: t('about'), icon: <Info size={18} /> },
   ];
@@ -201,6 +212,47 @@ export default function Settings() {
                   onChange={(e) => updateSetting('showNotification', e.target.checked)}
                 />
               </label>
+            </div>
+          </section>
+        )}
+
+        {/* 外观 */}
+        {activeTab === 'appearance' && (
+          <section className="settings-section fade-in">
+            <h2>{t('appearance')}</h2>
+            <div className="settings-group">
+              <p className="settings-desc">{t('appearanceDesc')}</p>
+              <div className="settings-card">
+                <label className="settings-item radio-row">
+                  <input 
+                    type="radio" 
+                    name="appearance" 
+                    checked={settings.appearance === 'system'}
+                    onChange={() => updateSetting('appearance', 'system')}
+                  />
+                  <span className="radio-label">{t('themeSystem')}</span>
+                </label>
+                <div className="settings-divider"></div>
+                <label className="settings-item radio-row">
+                  <input 
+                    type="radio" 
+                    name="appearance" 
+                    checked={settings.appearance === 'light'}
+                    onChange={() => updateSetting('appearance', 'light')}
+                  />
+                  <span className="radio-label">{t('themeLight')}</span>
+                </label>
+                <div className="settings-divider"></div>
+                <label className="settings-item radio-row">
+                  <input 
+                    type="radio" 
+                    name="appearance" 
+                    checked={settings.appearance === 'dark'}
+                    onChange={() => updateSetting('appearance', 'dark')}
+                  />
+                  <span className="radio-label">{t('themeDark')}</span>
+                </label>
+              </div>
             </div>
           </section>
         )}

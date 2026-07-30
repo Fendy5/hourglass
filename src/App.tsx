@@ -4,7 +4,9 @@ import { listen } from '@tauri-apps/api/event';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { isPermissionGranted, requestPermission, sendNotification, onAction, registerActionTypes } from '@tauri-apps/plugin-notification';
 import { useSettings } from './hooks/useSettings';
+import { useTheme } from './hooks/useTheme';
 import { GlassPanelV2 } from './components/GlassPanelV2';
+import { GlassPanelDark } from './components/GlassPanelDark';
 import './App.css';
 
 const RESET_THRESHOLD = 3 * 60; // 3 minutes in seconds
@@ -22,6 +24,7 @@ function App() {
   const [isCustomMode, setIsCustomMode] = useState(false);
   const lockedAt = useRef<number | null>(null);
   const { settings } = useSettings();
+  const { effectiveTheme } = useTheme();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
   // Stats for today
@@ -219,20 +222,37 @@ function App() {
 
   return (
     <div className="app-wrapper" onClick={stopAudio}>
-      <GlassPanelV2
-        timeLeft={timeLeft}
-        workDuration={workDuration}
-        isRunning={isRunning}
-        isCustomMode={isCustomMode}
-        setIsCustomMode={setIsCustomMode}
-        handleDurationChange={handleDurationChange}
-        handleReset={handleReset}
-        toggleTimer={toggleTimer}
-        handleClose={handleClose}
-        formatTime={formatTime}
-        workTimeToday={workTimeToday}
-        restTimeToday={restTimeToday}
-      />
+      {effectiveTheme === 'dark' ? (
+        <GlassPanelDark
+          timeLeft={timeLeft}
+          workDuration={workDuration}
+          isRunning={isRunning}
+          isCustomMode={isCustomMode}
+          setIsCustomMode={setIsCustomMode}
+          handleDurationChange={handleDurationChange}
+          handleReset={handleReset}
+          toggleTimer={toggleTimer}
+          handleClose={handleClose}
+          formatTime={formatTime}
+          workTimeToday={workTimeToday}
+          restTimeToday={restTimeToday}
+        />
+      ) : (
+        <GlassPanelV2
+          timeLeft={timeLeft}
+          workDuration={workDuration}
+          isRunning={isRunning}
+          isCustomMode={isCustomMode}
+          setIsCustomMode={setIsCustomMode}
+          handleDurationChange={handleDurationChange}
+          handleReset={handleReset}
+          toggleTimer={toggleTimer}
+          handleClose={handleClose}
+          formatTime={formatTime}
+          workTimeToday={workTimeToday}
+          restTimeToday={restTimeToday}
+        />
+      )}
     </div>
   );
 }
