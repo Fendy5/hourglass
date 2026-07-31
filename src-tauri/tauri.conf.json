@@ -21,7 +21,7 @@
         "fullscreen": false,
         "visible": false,
         "decorations": false,
-        "shadow": false,
+        "shadow": true,
         "transparent": true,
         "alwaysOnTop": true,
         "acceptFirstMouse": true

@@ -60,7 +60,7 @@ jobs:
           fi
           COMMITS=$(echo "$COMMITS" | grep -v "^- release: v" || true)
           echo "notes<<EOF" >> $GITHUB_OUTPUT
-          echo "### 🚀 最新更新内容" >> $GITHUB_OUTPUT
+          echo "### 🚀 What's New" >> $GITHUB_OUTPUT
           echo "$COMMITS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
