@@ -164,10 +164,11 @@ pub fn run() {
                     use windows::Win32::Graphics::Dwm::{DwmSetWindowAttribute, DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND};
                     use windows::Win32::Foundation::HWND;
                     if let Ok(hwnd) = window.hwnd() {
-                        let preference = DWMWCP_ROUND as i32;
+                        // DWMWCP_ROUND is a newtype wrapper, use .0 to get the inner i32
+                        let preference: i32 = DWMWCP_ROUND.0;
                         unsafe {
                             let _ = DwmSetWindowAttribute(
-                                HWND(hwnd as _),
+                                HWND(hwnd.0),
                                 DWMWA_WINDOW_CORNER_PREFERENCE,
                                 &preference as *const _ as *const _,
                                 std::mem::size_of::<i32>() as u32,
