@@ -195,18 +195,20 @@ pub fn run() {
                             // shows through without the white default fill.
                             let _: () = msg_send![ns_window, setOpaque: false];
 
-                            // Zero-out the content view's CALayer corner radius.
-                            // macOS applies its own rounding to borderless windows; this
-                            // conflicts with our CSS border-radius and leaves white fringes.
-                            // By resetting it here, CSS becomes the sole authority on corners.
+                            // Match the native layer corner radius to the CSS border-radius (24px).
+                            // This ensures the macOS drop shadow is generated as a rounded rectangle
+                            // instead of a square, eliminating the white fringe in the corners.
                             let content_view: *mut AnyObject = msg_send![ns_window, contentView];
                             if !content_view.is_null() {
                                 let layer: *mut AnyObject = msg_send![content_view, layer];
                                 if !layer.is_null() {
-                                    let _: () = msg_send![layer, setCornerRadius: 0.0_f64];
-                                    let _: () = msg_send![layer, setMasksToBounds: false];
+                                    let _: () = msg_send![layer, setCornerRadius: 24.0_f64];
+                                    let _: () = msg_send![layer, setMasksToBounds: true];
                                 }
                             }
+                            
+                            // Ask the window to recalculate its shadow based on the new layer shape
+                            let _: () = msg_send![ns_window, invalidateShadow];
                         }
                     }
                 }
