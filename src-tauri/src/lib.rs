@@ -159,6 +159,57 @@ pub fn run() {
 
             // 初次打开应用时显示主窗口
             if let Some(window) = app.get_webview_window("main") {
+                #[cfg(target_os = "windows")]
+                {
+                    use windows::Win32::Graphics::Dwm::{DwmSetWindowAttribute, DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND};
+                    use windows::Win32::Foundation::HWND;
+                    if let Ok(hwnd) = window.hwnd() {
+                        let preference = DWMWCP_ROUND as i32;
+                        unsafe {
+                            let _ = DwmSetWindowAttribute(
+                                HWND(hwnd as _),
+                                DWMWA_WINDOW_CORNER_PREFERENCE,
+                                &preference as *const _ as *const _,
+                                std::mem::size_of::<i32>() as u32,
+                            );
+                        }
+                    }
+                }
+
+                // On macOS, the system applies its own corner radius to the NSWindow and
+                // the underlying WKWebView layer. This radius does NOT match the CSS
+                // border-radius we set in the frontend, causing a white/transparent fringe
+                // at each corner. The fix: zero-out the system corner radius via the
+                // Objective-C runtime so that CSS becomes the sole authority on rounding.
+                #[cfg(target_os = "macos")]
+                {
+                    use objc2::runtime::AnyObject;
+                    use objc2::msg_send;
+
+                    if let Ok(ns_window) = window.ns_window() {
+                        unsafe {
+                            let ns_window = ns_window as *mut AnyObject;
+
+                            // Disable system opaque background so the transparent canvas
+                            // shows through without the white default fill.
+                            let _: () = msg_send![ns_window, setOpaque: false];
+
+                            // Zero-out the content view's CALayer corner radius.
+                            // macOS applies its own rounding to borderless windows; this
+                            // conflicts with our CSS border-radius and leaves white fringes.
+                            // By resetting it here, CSS becomes the sole authority on corners.
+                            let content_view: *mut AnyObject = msg_send![ns_window, contentView];
+                            if !content_view.is_null() {
+                                let layer: *mut AnyObject = msg_send![content_view, layer];
+                                if !layer.is_null() {
+                                    let _: () = msg_send![layer, setCornerRadius: 0.0_f64];
+                                    let _: () = msg_send![layer, setMasksToBounds: false];
+                                }
+                            }
+                        }
+                    }
+                }
+
                 let _ = window.show();
                 let _ = window.set_focus();
             }
