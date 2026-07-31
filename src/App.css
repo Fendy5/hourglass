@@ -55,6 +55,8 @@ body, html {
   display: flex;
   align-items: stretch;
   justify-content: stretch;
+  border-radius: 24px;
+  overflow: hidden;
 }
 
 /* ═══════════════════════════════════════════════════

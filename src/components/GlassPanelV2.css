@@ -4,6 +4,7 @@
   flex: 1;
   background: #FFFFFF;
   border-radius: 24px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -139,6 +140,11 @@
   cursor: pointer;
   appearance: none;
   padding: 0 16px 0 8px;
+}
+
+.glass-select-v2 option {
+  background: #F7FAFC;
+  color: #435272;
 }
 
 .custom-time-input-v2 {
