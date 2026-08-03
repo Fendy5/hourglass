@@ -81,6 +81,7 @@ function App() {
           if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.currentTime = 0;
+            audioRef.current.src = '';
           }
         });
       } catch (e) {
@@ -112,6 +113,7 @@ function App() {
           if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.currentTime = 0;
+            audioRef.current.src = '';
           } else {
             audioRef.current = new Audio();
           }
@@ -195,6 +197,7 @@ function App() {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
+      audioRef.current.src = '';
     }
   };
 
