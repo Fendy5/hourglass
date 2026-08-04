@@ -139,6 +139,11 @@ function App() {
           if (audioSrc) {
             audioRef.current.src = audioSrc;
             audioRef.current.loop = false;
+            audioRef.current.onended = () => {
+              if (audioRef.current) {
+                audioRef.current.src = '';
+              }
+            };
             audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
           }
         } catch (err) {
