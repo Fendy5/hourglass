@@ -112,12 +112,14 @@ export const GlassPanelV2: React.FC<GlassPanelProps> = ({
               }
             }}
           >
+            <option value={5}>5 mins</option>
+            <option value={10}>10 mins</option>
             <option value={15}>15 mins</option>
+            <option value={20}>20 mins</option>
             <option value={25}>25 mins</option>
             <option value={30}>30 mins</option>
+            <option value={40}>40 mins</option>
             <option value={45}>45 mins</option>
-            <option value={60}>60 mins</option>
-            <option value={90}>90 mins</option>
             <option value="custom">Custom</option>
           </select>
           {isCustomMode && (
