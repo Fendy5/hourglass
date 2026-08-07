@@ -55,7 +55,7 @@ function App() {
         setTimeLeft(state.time_left);
         setIsRunning(state.is_running);
         setWorkDuration(state.work_duration);
-        if (![15, 25, 30, 45, 60, 90].includes(state.work_duration)) {
+        if (![5, 10, 15, 20, 25, 30, 40, 45].includes(state.work_duration)) {
           setIsCustomMode(true);
         }
       } catch (e) {
@@ -98,7 +98,7 @@ function App() {
         setTimeLeft(time_left);
         setIsRunning(is_running);
         setWorkDuration(work_duration);
-        if (![15, 25, 30, 45, 60, 90].includes(work_duration)) {
+        if (![5, 10, 15, 20, 25, 30, 40, 45].includes(work_duration)) {
           setIsCustomMode(true);
         }
         if (is_running && time_left > 0) {
